@@ -1,36 +1,34 @@
 import SwiftUI
 
+extension BinaryFloatingPoint {
+    func rounded(toPlaces places: Int) -> Self {
+        let divisor = Self(pow(10.0, Double(places)))
+        return (self * divisor).rounded() / divisor
+    }
+}
+
 struct ContentView: View {
     
     @State private var total = 0.0
     @State private var numPeople = 2
     @State private var tipPercent = 0
     @FocusState private var amountIsFocused: Bool
-    
-    let tipAmts = [0,10,15,20,25]
-    
-    var perPerson : Double {
+
+    let tipAmts = [0, 10, 15, 20, 25]
+
+    var perPerson: Double {
         let peopleCount = Double(numPeople + 2)
         let tipSelection = Double(tipPercent)
-        
-        let tipVal = total / 100 * tipSelection
-        let finalAmount = total + tipVal
-        let perPersonAmt = finalAmount / peopleCount
-        return perPersonAmt
+        let tipVal = total * tipSelection / 100
+        return (total + tipVal) / peopleCount
     }
-    
-    var remaining: Double {
-        let originalAmount = Decimal(perPerson)
-        var decNum = originalAmount
-        var roundedNum = Decimal()
-        NSDecimalRound(&roundedNum, &decNum, 2, .down)
 
-        let roundedNSDecimal = NSDecimalNumber(decimal: roundedNum)
-        let remainingDouble = roundedNSDecimal.doubleValue
-        let remainder = total - remainingDouble * 3
+    var remaining: Double {
+        let perPersonAmt = perPerson
+        let roundedAmount = perPersonAmt.rounded(toPlaces: 2)
+        let remainder = total - roundedAmount * Double(numPeople + 2)
         return remainder
     }
-
 
     var body: some View {
         NavigationStack{
