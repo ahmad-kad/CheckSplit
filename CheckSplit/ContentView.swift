@@ -15,18 +15,23 @@ struct ContentView: View {
     @FocusState private var amountIsFocused: Bool
 
     let tipAmts = [0, 10, 15, 20, 25]
-
-    var perPerson: Double {
+    
+    var totalAmount: Double {
         let peopleCount = Double(numPeople + 2)
         let tipSelection = Double(tipPercent)
         let tipVal = total * tipSelection / 100
-        return (total + tipVal) / peopleCount
+        return (total + tipVal)
+    }
+
+    var perPerson: Double {
+        let peopleCount = Double(numPeople + 2)
+        return totalAmount / peopleCount
     }
 
     var remaining: Double {
         let perPersonAmt = perPerson
         let roundedAmount = perPersonAmt.rounded(toPlaces: 2)
-        let remainder = total - roundedAmount * Double(numPeople + 2)
+        let remainder = totalAmount - roundedAmount * Double(numPeople + 2)
         return remainder
     }
 
@@ -54,7 +59,12 @@ struct ContentView: View {
                     .pickerStyle(.segmented)
                     
                 }
-                Section("Amount Per Person") {
+                Section("Output") {
+                    HStack {
+                        Text("Bill Total:")
+                        Spacer()
+                        Text(totalAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    }
                     HStack {
                         Text("Per Person:")
                         Spacer()
